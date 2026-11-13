@@ -8,7 +8,7 @@ AWS를 주 사이트, Azure를 재해 복구(DR) 사이트로 두고 Spring PetC
 ## 출처와 역할
 
 - **애플리케이션**: [Spring PetClinic](https://github.com/spring-projects/spring-petclinic) 공식 샘플(Apache-2.0, `app/LICENSE.txt`)을 기반으로 했습니다. 앱 코드는 Spring 팀의 것이며, 이 레포에서 바꾼 부분은 DR 프로필(`application-aws.properties`, `application-azure.properties`)과 전환 시 화면 상단 DR 배너입니다.
-- **인프라·DR 구성**: 교육과정 팀 프로젝트(2025-12)로 진행했습니다. AWS·Azure Terraform 코드, DMS 복제 구성, 장애 전환 절차를 완성 했습니다. 이 레포는 그 작업을 개인 포트폴리오용으로 다시 정리한 것입니다.
+- **인프라·DR 구성**: 팀 프로젝트(2025-12)로 진행했습니다. AWS·Azure Terraform 코드, DMS 복제 구성, 장애 전환 절차를 완성 했습니다. 이 레포는 그 작업을 개인 포트폴리오용으로 다시 정리한 것입니다.
 
 ## 구조
 
