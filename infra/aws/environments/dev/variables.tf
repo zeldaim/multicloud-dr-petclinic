@@ -76,7 +76,7 @@ variable "azure_bgp_asn" {
 variable "azure_public_ip" {
   description = "Azure VPN Gateway의 Public IP"
   type        = string
-  default     = "4.218.15.218"
+  default     = ""  # 배포 시 Azure VPN Gateway 공인 IP 입력 (시연 후 삭제된 리소스)
 }
 
 variable "azure_cidr" {

@@ -486,7 +486,7 @@ ssh -i mykey/petclinic-keypair.pem -J ubuntu@<BASTION_IP> ubuntu@<MGMT_IP>
 
 ### Azure VPN 설정
 - **BGP ASN**: 65000
-- **Azure Public IP**: 4.218.15.218
+- **Azure Public IP**: <azure-vpn-gateway-public-ip>
 - **Azure CIDR**: 192.168.0.0/16
 - **Azure DNS IP**: 192.168.200.4
 
