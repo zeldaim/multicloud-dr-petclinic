@@ -5,7 +5,7 @@ AWS를 주 사이트, Azure를 재해 복구(DR) 사이트로 두고 Spring PetC
 
 이 문서는 세 부분으로 나뉩니다.
 
-1. **[원래 프로젝트](#1-원래-프로젝트-2025-12-팀)** (2025-12, 팀) — 구조와 내 담당 부분
+1. **[원래 프로젝트](#1-원래-프로젝트-2025-12-팀)** (2025-12, 팀) — 구조와 내 담당(인프라 구현 전반)
 2. **[개인 검증](#2-개인-검증-2026-11)** (2026-11) — 클라우드 없이 다시 확인한 것: [전환 절차](dr-local/README.md) · [Terraform](tf-local/README.md)
 3. **[한계](#3-한계)** — 검증하지 못한 것
 
@@ -14,7 +14,7 @@ AWS를 주 사이트, Azure를 재해 복구(DR) 사이트로 두고 Spring PetC
 ## 출처와 역할
 
 - **애플리케이션**: [Spring PetClinic](https://github.com/spring-projects/spring-petclinic) 공식 샘플(Apache-2.0, `app/LICENSE.txt`)을 기반으로 했습니다. 앱 코드는 Spring 팀의 것이며, 이 레포에서 바꾼 부분은 DR 프로필(`application-aws.properties`, `application-azure.properties`)과 전환 시 화면 상단 DR 배너입니다.
-- **인프라·DR 구성**: 팀 프로젝트(2025-12)로 진행했습니다. AWS·Azure Terraform 코드, DMS 복제 구성, 장애 전환 절차를 완성했습니다. 이 레포는 그 작업을 개인 포트폴리오용으로 다시 정리한 것입니다.
+- **인프라·DR 구성**: 팀 프로젝트(2025-12)로 진행했고, 저는 **인프라 구현 전반**을 담당했습니다. AWS·Azure Terraform 코드, DMS 복제 구성, 장애 전환 절차를 완성했습니다. 이 레포는 그 작업을 개인 포트폴리오용으로 다시 정리한 것입니다.
 
 ---
 
@@ -39,10 +39,13 @@ AWS를 주 사이트, Azure를 재해 복구(DR) 사이트로 두고 Spring PetC
  장애 시: 앱을 azure 프로필로 기동 → 복제해 둔 Azure DB 로 서비스 계속 (화면에 "Disaster Recovery Site" 배너)
 ```
 
-### 내 담당 부분
+### 내 담당 — 인프라 구현 전반
+
+AWS · Azure 인프라 구현 전반을 맡았다. 영역별 주요 구현은 아래와 같다.
 
 | 영역 | 내용 | 이 레포의 근거 |
 |---|---|---|
+| AWS · Azure 인프라 (Terraform) | VPC(2 AZ) · 서브넷 · NAT · Bastion · EC2 · RDS / VNet · 위임 서브넷 · MySQL Flexible Server · Private DNS | [`infra/aws/`](infra/aws/), [`infra/azure/`](infra/azure/) |
 | Site-to-Site VPN (정적 IP) | AWS VPN Gateway · Customer Gateway · 정적 라우트 ↔ Azure VPN Gateway · Local Network Gateway (IPsec) | [`infra/aws/modules/vpc/main.tf`](infra/aws/modules/vpc/main.tf), [`infra/azure/network.tf`](infra/azure/network.tf) |
 | DB 복제 (AWS DMS) | RDS 덤프 → Azure 적재, DMS full load + CDC 연동, 트러블슈팅 | RDS 쪽 전제(binlog ROW · GTID · 백업)와 Azure 쪽 GTID 설정이 코드에 있음. DMS 작업 자체는 콘솔에서 구성(코드 없음) |
 | 이름 해석 | AWS 에서 Azure MySQL 사설 FQDN 을 찾도록 Route 53 Resolver ↔ Azure Private DNS Resolver 연동 | [`infra/aws/modules/vpc/main.tf`](infra/aws/modules/vpc/main.tf), [`infra/azure/network.tf`](infra/azure/network.tf) |
