@@ -1,0 +1,11 @@
+Terraform v1.10.5
+fmt rc=0 형식 안 맞는 파일: 
+init rc=0
+Warning: Argument is deprecated
+  with azurerm_virtual_network_gateway.vpn_gateway,
+  on network.tf line 130, in resource "azurerm_virtual_network_gateway" "vpn_gateway":
+ 130:   enable_bgp    = false
+the `enable_bgp` property has been deprecated in favour of the `bgp_enabled`
+property and will be removed in v5.0 of the AzureRM Provider
+Success! The configuration is valid, but there were some validation warnings
+as shown above.

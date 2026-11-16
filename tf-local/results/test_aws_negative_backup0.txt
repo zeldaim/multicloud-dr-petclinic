@@ -1,0 +1,18 @@
+tests/dr_requirements.tftest.hcl... in progress
+  run "rds_dms_cdc_prerequisites"... fail
+
+Error: Test assertion failed
+
+  on tests/dr_requirements.tftest.hcl line 31, in run "rds_dms_cdc_prerequisites":
+  31:     condition     = aws_db_instance.main.backup_retention_period >= 1
+    ├────────────────
+    │ aws_db_instance.main.backup_retention_period is 0
+
+RDS 는 자동 백업이 켜져 있어야 바이너리 로그를 남긴다 (CDC 전제)
+  run "rds_not_public_and_encrypted"... pass
+  run "two_az_and_vpn_route_to_azure"... pass
+  run "ssh_open_to_internet_by_default"... pass
+tests/dr_requirements.tftest.hcl... tearing down
+tests/dr_requirements.tftest.hcl... fail
+
+Failure! 3 passed, 1 failed.

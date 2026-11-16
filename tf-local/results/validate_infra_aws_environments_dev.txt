@@ -1,0 +1,4 @@
+Terraform v1.10.5
+fmt rc=3 형식 안 맞는 파일: backend.tf main.tf variables.tf 
+init rc=0
+Success! The configuration is valid.

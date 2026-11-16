@@ -1,0 +1,68 @@
+# 음성 시험: aws_vpc_cidr 를 192.168.0.0/20 (Azure VNet 192.168.0.0/16 과 겹침) 으로 바꾼 임시 사본으로 실행한 결과
+tests/zz_negative_tmp.tftest.hcl... in progress
+  run "mysql_is_replication_target"... pass
+
+Warning: Argument is deprecated
+
+  with azurerm_virtual_network_gateway.vpn_gateway,
+  on network.tf line 130, in resource "azurerm_virtual_network_gateway" "vpn_gateway":
+ 130:   enable_bgp    = false
+
+the `enable_bgp` property has been deprecated in favour of the `bgp_enabled`
+property and will be removed in v5.0 of the AzureRM Provider
+
+(and 2 more similar warnings elsewhere)
+
+  run "mysql_private_only"... pass
+
+Warning: Argument is deprecated
+
+  with azurerm_virtual_network_gateway.vpn_gateway,
+  on network.tf line 130, in resource "azurerm_virtual_network_gateway" "vpn_gateway":
+ 130:   enable_bgp    = false
+
+the `enable_bgp` property has been deprecated in favour of the `bgp_enabled`
+property and will be removed in v5.0 of the AzureRM Provider
+
+(and one more similar warning elsewhere)
+
+  run "site_to_site_vpn_to_aws"... fail
+
+Warning: Argument is deprecated
+
+  with azurerm_virtual_network_gateway.vpn_gateway,
+  on network.tf line 130, in resource "azurerm_virtual_network_gateway" "vpn_gateway":
+ 130:   enable_bgp    = false
+
+the `enable_bgp` property has been deprecated in favour of the `bgp_enabled`
+property and will be removed in v5.0 of the AzureRM Provider
+
+(and one more similar warning elsewhere)
+
+
+Error: Test assertion failed
+
+  on tests/zz_negative_tmp.tftest.hcl line 100, in run "site_to_site_vpn_to_aws":
+ 100:     condition     = alltrue([for v in [for c in tolist(azurerm_virtual_network.vnet.address_space) : { s = sum([for i, o in split(".", cidrhost(c, 0)) : tonumber(o) * pow(256, 3 - i)]), n = pow(2, 32 - tonumber(split("/", c)[1])) }] : alltrue([for a in [{ s = sum([for i, o in split(".", cidrhost(var.aws_vpc_cidr, 0)) : tonumber(o) * pow(256, 3 - i)]), n = pow(2, 32 - tonumber(split("/", var.aws_vpc_cidr)[1])) }] : v.s + v.n <= a.s || a.s + a.n <= v.s])])
+    ├────────────────
+    │ azurerm_virtual_network.vnet.address_space is set of string with 1 element
+    │ var.aws_vpc_cidr is "192.168.0.0/20"
+
+Azure VNet 과 AWS VPC 대역이 겹치면 VPN 라우팅이 안 된다
+  run "current_state_records"... pass
+
+Warning: Argument is deprecated
+
+  with azurerm_virtual_network_gateway.vpn_gateway,
+  on network.tf line 130, in resource "azurerm_virtual_network_gateway" "vpn_gateway":
+ 130:   enable_bgp    = false
+
+the `enable_bgp` property has been deprecated in favour of the `bgp_enabled`
+property and will be removed in v5.0 of the AzureRM Provider
+
+(and one more similar warning elsewhere)
+
+tests/zz_negative_tmp.tftest.hcl... tearing down
+tests/zz_negative_tmp.tftest.hcl... fail
+
+Failure! 3 passed, 1 failed.
