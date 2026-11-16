@@ -1,0 +1,7 @@
+detected 4.8
+promoted 4.9
+rto 18.7
+attempts 132
+acked 105
+failed 27
+lost 0

@@ -1,0 +1,31 @@
+# 로컬 DR 재현 — 클라우드 대신 Docker 로 같은 구조를 만든다 (비용 0, 누구나 재현 가능)
+#   mysql-primary  = AWS RDS MySQL (주 사이트 DB)
+#   mysql-dr       = Azure MySQL Flexible Server (DR DB) — GTID 복제로 따라감 (= AWS DMS CDC 역할)
+#   app-aws        = EC2 의 PetClinic (profile aws)
+#   app-dr         = Azure VM 의 PetClinic (profile azure) — 장애 전까지 꺼 둠(원래 프로젝트와 같은 콜드 스탠바이)
+#   front          = 사용자 진입점 (Route 53 failover 역할) — 주 사이트가 죽으면 DR 로 보냄
+name: petclinic-dr
+x-mysql: &mysql
+  image: mysql:8.4
+  environment: { MYSQL_ROOT_PASSWORD: rootpw, MYSQL_DATABASE: petclinic, MYSQL_USER: petclinic, MYSQL_PASSWORD: petclinic }
+  healthcheck: { test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-prootpw"], interval: 3s, retries: 40 }
+services:
+  mysql-primary:
+    <<: *mysql
+    command: ["--server-id=1", "--gtid-mode=ON", "--enforce-gtid-consistency=ON", "--log-bin=mysql-bin"]
+  mysql-dr:
+    <<: *mysql
+    command: ["--server-id=2", "--gtid-mode=ON", "--enforce-gtid-consistency=ON", "--log-bin=mysql-bin", "--read-only=ON"]
+  app-aws:
+    image: petclinic-dr
+    environment: { SPRING_PROFILES_ACTIVE: "${APP_PROFILES_AWS:-aws}", DB_HOST: mysql-primary, DB_USERNAME: petclinic, DB_PASSWORD: petclinic }
+    depends_on: { mysql-primary: { condition: service_healthy } }
+  app-dr:
+    image: petclinic-dr
+    profiles: ["dr"]
+    environment: { SPRING_PROFILES_ACTIVE: "${APP_PROFILES_DR:-azure}", DB_HOST: mysql-dr, DB_USERNAME: petclinic, DB_PASSWORD: petclinic }
+  front:
+    image: nginx:1.27-alpine
+    volumes: ["./front.conf:/etc/nginx/conf.d/default.conf:ro"]
+    ports: ["127.0.0.1:8088:80"]
+    depends_on: [app-aws]

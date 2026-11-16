@@ -1,0 +1,7 @@
+# 화면 녹화용: 가상 화면 + 터미널 + ffmpeg + docker CLI/compose
+FROM python:3.12-slim
+RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends xvfb xterm ffmpeg fonts-nanum fonts-dejavu-core curl ca-certificates procps \
+ && rm -rf /var/lib/apt/lists/* \
+ && curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-27.3.1.tgz | tar -xz -C /tmp && mv /tmp/docker/docker /usr/local/bin/ && rm -rf /tmp/docker \
+ && mkdir -p /usr/local/lib/docker/cli-plugins && curl -fsSL -o /usr/local/lib/docker/cli-plugins/docker-compose https://github.com/docker/compose/releases/download/v2.29.7/docker-compose-linux-x86_64 && chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8

@@ -1,0 +1,5 @@
+*.mp4 binary
+*.png binary
+*.sh text eol=lf
+*.py text eol=lf
+*.conf text eol=lf
