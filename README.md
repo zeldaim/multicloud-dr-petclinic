@@ -46,7 +46,7 @@ docs/       구현 근거, 마이그레이션 가이드, 발표 자료, AWS 인�
 
 ## 실행
 
-DB 접속 정보는 코드에 넣지 않고 환경변수로 받습니다.
+DB 접속 정보는 코드에 넣지 않고 환경변수로 받는다.
 
 ```bash
 cd app && ./mvnw package -DskipTests
