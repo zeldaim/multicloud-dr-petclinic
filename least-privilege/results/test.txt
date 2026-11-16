@@ -1,0 +1,9 @@
+tests/least_privilege.tftest.hcl... in progress
+  run "server_has_no_admin"... pass
+  run "wildcard_resource_only_for_read"... pass
+  run "deployer_is_separated"... pass
+  run "deployer_iam_is_scoped"... pass
+tests/least_privilege.tftest.hcl... tearing down
+tests/least_privilege.tftest.hcl... pass
+
+Success! 4 passed, 0 failed.

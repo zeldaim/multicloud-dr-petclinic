@@ -1,0 +1,19 @@
+# 음성 시험 2: -var deployer_session_seconds=43200  (배포 역할 임시 키 12시간)
+tests/least_privilege.tftest.hcl... in progress
+  run "server_has_no_admin"... pass
+  run "wildcard_resource_only_for_read"... pass
+  run "deployer_is_separated"... fail
+
+Error: Test assertion failed
+
+  on tests/least_privilege.tftest.hcl line 66, in run "deployer_is_separated":
+  66:     condition     = aws_iam_role.mgmt_deployer.max_session_duration <= 3600
+    ├────────────────
+    │ aws_iam_role.mgmt_deployer.max_session_duration is 43200
+
+배포 역할 임시 키는 1시간 이하여야 한다
+  run "deployer_iam_is_scoped"... pass
+tests/least_privilege.tftest.hcl... tearing down
+tests/least_privilege.tftest.hcl... fail
+
+Failure! 3 passed, 1 failed.

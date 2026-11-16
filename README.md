@@ -61,6 +61,7 @@ infra/
 app/        Spring PetClinic + DR 프로필 (aws / azure) · 전환 시 화면 상단 DR 배너
 docs/       구현 근거, 마이그레이션 가이드, 발표 자료, AWS 인프라 상세
 dr-local/   개인 검증 — 전환 절차 (Docker)
+least-privilege/  개인 검증 — 관리 서버 최소 권한 (정책 · 시험 · 검증기)
 tf-local/   개인 검증 — Terraform (validate · Trivy · terraform test)
 ```
 
@@ -119,6 +120,16 @@ terraform destroy
 - **Azure MySQL `require_secure_transport=OFF`** — 앱 azure 프로필은 `useSSL=true`, 서로 맞지 않음
 - **Azure DB 이름 `petclinic-dr-db`** — 앱은 `petclinic` 을 기대 (DMS 가 스키마를 만들면 무관, 확인 필요)
 
+### 2-3. 관리 서버 최소 권한 재설계 → [`least-privilege/`](least-privilege/README.md)
+
+관리 서버에 붙어 있던 `AdministratorAccess` 를 **평소 역할**(SSM `/petclinic/*` 읽기 · 조회 · 역할 전환)과 **배포 역할**(eksctl 공식 최소 정책, 임시 키 1시간)로 나눴다. 기존 코드는 그대로 두고 대체안으로 작성.
+
+| 확인 | 결과 |
+|---|---|
+| `terraform test` + mock | 4/4 통과, 음성 시험 2건 실패 확인 |
+| 동작 검증기 (AWS Service Reference 대조, 직접 작성) | 43개 동작 ERROR 0 — 처음 `*` 로 둔 `eks:DescribeCluster` 를 잡아내 고침 |
+| Checkov 3.4.5 | 기존: AdministratorAccess 사용(CKV_AWS_274) 지적 → 새 평소 역할 0건 |
+
 ---
 
 ## 3. 한계
@@ -135,4 +146,5 @@ terraform destroy
 - [x] 수동 전환 → 헬스체크 기반 자동 전환 — **로컬 검증 완료** (`dr-local/failover.sh`). 클라우드 적용(Route 53 / Traffic Manager)은 남음
 - [x] RTO/RPO 측정 — **로컬: RTO 18.7초 · RPO 0건** (`dr-local/results_2026-11-16/`). 클라우드 값은 남음
 - [x] Terraform 로컬 검증 — validate · Trivy · `terraform test` (`tf-local/`)
+- [x] 관리 서버 최소 권한 설계 (`least-privilege/`) — 실제 계정에서 eksctl 동작 확인은 남음
 - [x] 시연 영상·스크린샷 (로컬) — 클라우드 비용 기록은 남음

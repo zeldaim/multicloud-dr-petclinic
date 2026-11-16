@@ -1,0 +1,22 @@
+# 음성 시험 1: -var ssm_path_prefix=/  (SSM 전체 읽기)
+tests/least_privilege.tftest.hcl... in progress
+  run "server_has_no_admin"... pass
+  run "wildcard_resource_only_for_read"... fail
+
+Error: Test assertion failed
+
+  on tests/least_privilege.tftest.hcl line 47, in run "wildcard_resource_only_for_read":
+  47:     condition = alltrue([
+  48:       for s in jsondecode(aws_iam_policy.mgmt_daily.policy).Statement :
+  49:       strcontains(s.Resource, ":parameter/petclinic/") && !endswith(s.Resource, ":parameter/*") if s.Sid == "ReadProjectParams"
+  50:     ])
+    ├────────────────
+    │ aws_iam_policy.mgmt_daily.policy is "{\"Statement\":[{\"Action\":[\"ssm:GetParameter\",\"ssm:GetParameters\",\"ssm:GetParametersByPath\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:ssm:ap-northeast-2:123456789012:parameter/*\",\"Sid\":\"ReadProjectParams\"},{\"Action\":[\"ec2:DescribeSubnets\",\"eks:DescribeCluster\",\"eks:ListClusters\"],\"Effect\":\"Allow\",\"Resource\":\"*\",\"Sid\":\"ReadOnlyDescribe\"},{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Resource\":\"arn:aws:iam::123456789012:role/petclinic-mgmt-deployer\",\"Sid\":\"SwitchToDeployer\"}],\"Version\":\"2012-10-17\"}"
+
+SSM 읽기가 /petclinic/ 경로로 좁혀져 있지 않다
+  run "deployer_is_separated"... pass
+  run "deployer_iam_is_scoped"... pass
+tests/least_privilege.tftest.hcl... tearing down
+tests/least_privilege.tftest.hcl... fail
+
+Failure! 3 passed, 1 failed.
